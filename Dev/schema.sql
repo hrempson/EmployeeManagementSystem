@@ -27,3 +27,6 @@ CREATE TABLE employee (
     manager_id INT NULL,
     PRIMARY KEY(id)
 );
+
+
+INSERT INTO department (name) VALUES ("Accounting");
