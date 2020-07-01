@@ -29,4 +29,3 @@ CREATE TABLE employee (
 );
 
 
-INSERT INTO department (name) VALUES ("Accounting");

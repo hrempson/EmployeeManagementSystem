@@ -1,21 +1,23 @@
 const connection = require("./db/connection");
 const inquirer = require("inquirer");
-const { writeFile } = require("fs");
-const { listenerCount } = require("process");
+const {
+    writeFile
+} = require("fs");
+const {
+    listenerCount
+} = require("process");
 
 // add departments, roles, employees
 function addDepartment() {
-    inquirer.prompt([
-        {
+    inquirer.prompt([{
         message: "What is the department name?",
         type: "input",
         name: "departmentName"
-        }
-    ]).then((response) => {
+    }]).then((response) => {
 
         connection.query(" INSERT INTO department (name) VALUES (?)", response.departmentName, (err, result) => {
-            if(err) throw err;
-            console.log ("Inserted ID " +result.insertId);
+            if (err) throw err;
+            console.log("Inserted ID " + result.insertId);
             nextTask();
         });
     });
@@ -26,93 +28,95 @@ function addRole() {
     connection.query("SELECT * FROM department", (err, results) => {
         if (err) throw err;
 
-        inquirer.prompt([
-            {
-            message: "What is the title?",
-            type: "input",
-            name: "title"
+        inquirer.prompt([{
+                message: "What is the title?",
+                type: "input",
+                name: "title"
             },
             {
-            message: "What is the salary?",
-            type: "input",
-            name: "salary",
-            validate: (value) => {
-                return !isNaN(value) ? true : "Please insert a numeric value"
-            }
+                message: "What is the salary?",
+                type: "input",
+                name: "salary",
+                validate: (value) => {
+                    return !isNaN(value) ? true : "Please insert a numeric value"
+                }
             },
             {
-            message: "What department does the employee belong to?",
-            type: "list",
-            name: "department_id",
-            choices: results.map( department => {
-                return {
-                    name: department.name,
-                    value: department.id
-                };
-            })
-        }
-
-    ]).then((response) => {
-        console.table(response);
-        
-        connection.query(" INSERT INTO role SET ?", response, (err, result) => {
-            if(err) throw err;
-            console.log ("Inserted ID " + result.insertId);
-            nextTask();
-        });
-    
-});
-});
-}
-function addEmployee() {
-        getRoles((roles) => {
-            getEmployees((employees) => {
-                employeeSelections = employees.map(employee => {
+                message: "What department does the employee belong to?",
+                type: "list",
+                name: "department_id",
+                choices: results.map(department => {
                     return {
-                        name: employee.first_name + " " + employee.last_name,
-                        value: employee.id
-                        };
-                    });
-
-
-                employees.unshift( { name: "none", value: null } );
-        inquirer.prompt([
-            {
-            message: "What is the employees first name?",
-            type: "input",
-            name: "first_name"
-            },
-            {
-            message: "What is the employees last name?",
-            type: "input",
-            name: "last_ name"
-            },
-            {
-            message: "What is the employees role?",
-            type: "list",
-            name: "role_id",
-            choices: roles.map( role => {
-                return {
-                    name: role.title,
-                    value: role.id
-                };
-            })
-            },
-            {
-            message: "Who is the employee's manager: ",
-            type: "list",
-            name: "manager_id",
-            choices: employeeSelections
+                        name: department.name,
+                        value: department.id
+                    };
+                })
             }
+
         ]).then((response) => {
-            connection.query(" INSERT INTO employee SET ?", response, (err, result) => {
-                if(err) throw err;
-                console.table ("Inserted ID " +  result.insertId);
+            console.table(response);
+
+            connection.query(" INSERT INTO role SET ?", response, (err, result) => {
+                if (err) throw err;
+                console.log("Inserted ID " + result.insertId);
                 nextTask();
+            });
+
+        });
+    });
+}
+
+function addEmployee() {
+    getRoles((roles) => {
+        getEmployees((employees) => {
+            employeeSelections = employees.map(employee => {
+                return {
+                    name: employee.first_name + " " + employee.last_name,
+                    value: employee.id
+                };
+            });
+
+
+            employees.unshift({
+                name: "none",
+                value: null
+            });
+            inquirer.prompt([{
+                    message: "What is the employees first name?",
+                    type: "input",
+                    name: "first_name"
+                },
+                {
+                    message: "What is the employees last name?",
+                    type: "input",
+                    name: "last_ name"
+                },
+                {
+                    message: "What is the employees role?",
+                    type: "list",
+                    name: "role_id",
+                    choices: roles.map(role => {
+                        return {
+                            name: role.title,
+                            value: role.id
+                        };
+                    })
+                },
+                {
+                    message: "Who is the employee's manager: ",
+                    type: "list",
+                    name: "manager_id",
+                    choices: employeeSelections
+                }
+            ]).then((response) => {
+                connection.query(" INSERT INTO employee SET ?", response, (err, result) => {
+                    if (err) throw err;
+                    console.table("Inserted ID " + result.insertId);
+                    nextTask();
+                });
             });
         });
     });
-});
 }
 
 // view departments, roles, employees
@@ -128,11 +132,12 @@ function getEmployees(cb) {
     connection.query("SELECT * FROM employee", (err, results) => {
         if (err) throw err;
         cb(results);
-});
-} 
+    });
+}
+
 function viewDepartment() {
     connection.query("Select * FROM department", (err, results) => {
-        if(err) throw err
+        if (err) throw err
         console.table(results);
         nextTask();
     });
@@ -142,7 +147,7 @@ function viewRole() {
     getRoles((roles) => {
         console.table(roles);
         nextTask();
-});
+    });
 }
 
 function viewEmployee() {
@@ -157,13 +162,12 @@ function viewEmployee() {
 function updateEmployeeRoles() {
     getRoles((roles) => {
         employeeSelections = employees.map(employee => {
-            return{
+            return {
                 name: employee.first_name + " " + employee.last_name,
                 value: employee.id
             }
         })
-        inquirer.prompt([
-            {
+        inquirer.prompt([{
                 message: "What is the name of the employee you'd like to update? ",
                 type: "list",
                 choices: employeeSelections
@@ -187,7 +191,8 @@ function updateEmployeeRoles() {
                     return {
                         name: departmentName.title,
                         value: departmentName.id
-                    }})
+                    }
+                })
             },
             {
                 message: "Who is the employee's new manager: ",
@@ -206,37 +211,44 @@ function updateEmployeeRoles() {
     })
 
 }
+
 function nextTask() {
-    inquirer.prompt ([
-        {
-            message: "What would you like to do?",
-            type: "list",
-            name: "selectOptions",
-            choices: optionList
-        }
-    ]).then ((response) => {
+    inquirer.prompt([{
+        message: "What would you like to do?",
+        type: "list",
+        name: "selectOptions",
+        choices: optionList
+    }]).then((response) => {
         let i = response.selectOptions
-        if( i == 0) {addDepartment()}
-        else if ( i == 1) {addEmployee()}
-        else if (i == 2) {viewDepartment}
-        else if (i == 3) {viewRole}
-        else if (i == 4) {viewEmployee()}
-        else if (i == 5) {updateEmployeeRoles()}
+        if (i == 0) {
+            addRole();
+        } else if (i == 1) {
+            addEmployee();
+        } else if (i == 2) {
+            addDepartment();
+        } else if (i == 3) {
+            viewDepartment();
+        } else if (i == 4) {
+            viewRole();
+        } else if (i == 5) {
+            viewEmployee();
+        } else if (i == 6) {
+            updateEmployeeRoles();
+        }
     })
 }
 
-const optionList = [
-    {
+const optionList = [{
         name: "Add department",
-        value: 0 
+        value: 2
     },
     {
         name: "Add a role",
-        value: 1
+        value: 0
     },
-    {   
+    {
         name: "Add employee",
-        value: 2
+        value: 1
     },
     {
         name: "View departments",
