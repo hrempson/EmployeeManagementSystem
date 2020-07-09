@@ -28,4 +28,8 @@ CREATE TABLE employee (
     PRIMARY KEY(id)
 );
 
-
+INSERT INTO department (name) VALUES ("Accounting");
+INSERT INTO department (name) VALUES ("Engineering");
+INSERT INTO department (name) VALUES ("HR");
+INSERT INTO department (name) VALUES ("Sales");
+INSERT INTO employee (first_name, last_name, role_id) VALUES ("Oprah", "Winfrey", 1);

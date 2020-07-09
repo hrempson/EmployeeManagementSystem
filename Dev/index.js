@@ -75,8 +75,7 @@ function addEmployee() {
                     value: employee.id
                 };
             });
-
-
+// console.log(employeeSelections);
             employees.unshift({
                 name: "none",
                 value: null
@@ -89,7 +88,7 @@ function addEmployee() {
                 {
                     message: "What is the employees last name?",
                     type: "input",
-                    name: "last_ name"
+                    name: "last_name"
                 },
                 {
                     message: "What is the employees role?",
@@ -104,9 +103,8 @@ function addEmployee() {
                 },
                 {
                     message: "Who is the employee's manager: ",
-                    type: "list",
-                    name: "manager_id",
-                    choices: employeeSelections
+                    type: "input",
+                    name: "manager_id"
                 }
             ]).then((response) => {
                 connection.query(" INSERT INTO employee SET ?", response, (err, result) => {
